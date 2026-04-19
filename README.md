@@ -45,8 +45,8 @@ Audio Input (mic / file) -> Speech-to-Text (Whisper / Groq) -> Intent Classifica
 - Groq API key (free at console.groq.com)
 
 ### 1. Clone the repo
-git clone https://github.com/PardhuWebDev/vela.git
-cd vela
+git clone https://github.com/PardhuWebDev/VELA.git
+cd VELA
 
 ### 2. Python backend
 python -m venv venv
