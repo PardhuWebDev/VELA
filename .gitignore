@@ -1,0 +1,16 @@
+﻿# Python
+venv/
+__pycache__/
+*.pyc
+.env
+
+# Node
+ui-web/node_modules/
+ui-web/dist/
+
+# Output files
+output/
+
+# Test files
+test_ollama.py
+ui.py
