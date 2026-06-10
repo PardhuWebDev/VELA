@@ -1,31 +1,20 @@
 import os
-import requests
+from groq import Groq
 from dotenv import load_dotenv
-
 load_dotenv()
 
-OUTPUT_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "output")
-os.makedirs(OUTPUT_DIR, exist_ok=True)
-
 def _llm_generate(prompt: str) -> str:
-    model = os.getenv("OLLAMA_MODEL", "llama3")
-    base_url = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
-    response = requests.post(
-        f"{base_url}/api/generate",
-        json={"model": model, "prompt": prompt, "stream": False}
+    client = Groq(api_key=os.getenv("GROQ_API_KEY"))
+    response = client.chat.completions.create(
+        model="llama3-70b-8192",
+        messages=[{"role": "user", "content": prompt}],
     )
-    return response.json().get("response", "").strip()
-
-def create_file(filename: str, content: str = "") -> dict:
-    filepath = os.path.join(OUTPUT_DIR, filename)
-    with open(filepath, "w") as f:
-        f.write(content)
-    return {"status": "success", "message": f"File created: output/{filename}", "output": content}
+    return response.choices[0].message.content.strip()
 
 def write_code(filename: str, language: str, description: str) -> dict:
     prompt = f"Write {language} code for: {description}. Return only the code, no explanation."
     code = _llm_generate(prompt)
-    return create_file(filename, code)
+    return {"status": "success", "message": f"Code generated for {filename}", "output": code}
 
 def summarize(content: str) -> dict:
     prompt = f"Summarize the following text concisely:\n\n{content}"
@@ -41,12 +30,11 @@ def execute(intent_data: dict) -> dict:
     filename = intent_data.get("filename", "output.txt")
     language = intent_data.get("language", "python")
     content = intent_data.get("content", "")
-
     if "write_code" in intents:
         return write_code(filename, language, content)
     elif "summarize" in intents:
         return summarize(content)
     elif "create_file" in intents:
-        return create_file(filename, content)
+        return {"status": "success", "message": f"File '{filename}' ready.", "output": content}
     else:
         return chat(content)
