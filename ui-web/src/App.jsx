@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 
-const API = "https://vela-production-6863.up.railway.app/process";
+const API = "https://vela-dcj1.onrender.com/process";
 
 export default function App() {
   const [status, setStatus] = useState("idle");
